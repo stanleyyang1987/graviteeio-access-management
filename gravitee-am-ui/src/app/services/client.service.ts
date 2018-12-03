@@ -50,7 +50,8 @@ export class ClientService {
       'identities': client.identities,
       'oauth2Identities': client.oauth2Identities,
       'certificate': client.certificate,
-      'enhanceScopesWithUserPermissions' : client.enhanceScopesWithUserPermissions
+      'enhanceScopesWithUserPermissions' : client.enhanceScopesWithUserPermissions,
+      'useDefaultIdentityProvider' : client.useDefaultIdentityProvider
     });
   }
 

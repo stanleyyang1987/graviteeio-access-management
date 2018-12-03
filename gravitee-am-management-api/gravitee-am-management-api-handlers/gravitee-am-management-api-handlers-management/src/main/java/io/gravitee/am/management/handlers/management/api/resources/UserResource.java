@@ -15,10 +15,10 @@
  */
 package io.gravitee.am.management.handlers.management.api.resources;
 
+import io.gravitee.am.management.service.UserService;
 import io.gravitee.am.model.User;
 import io.gravitee.am.service.DomainService;
 import io.gravitee.am.service.IdentityProviderService;
-import io.gravitee.am.service.UserService;
 import io.gravitee.am.service.exception.DomainNotFoundException;
 import io.gravitee.am.service.exception.UserNotFoundException;
 import io.gravitee.am.service.model.UpdateUser;
@@ -101,15 +101,19 @@ public class UserResource {
     @ApiResponses({
             @ApiResponse(code = 201, message = "User successfully updated", response = User.class),
             @ApiResponse(code = 500, message = "Internal server error")})
-    public Response updateUser(
+    public void updateUser(
             @PathParam("domain") String domain,
             @PathParam("user") String user,
-            @ApiParam(name = "user", required = true) @Valid @NotNull UpdateUser updateUser) {
-        /*domainService.findById(domain);
+            @ApiParam(name = "user", required = true) @Valid @NotNull UpdateUser updateUser,
+            @Suspended final AsyncResponse response) {
 
-        return userService.update(domain, user, updateUser);*/
-
-        return Response.status(Response.Status.NOT_IMPLEMENTED).entity("Not implemented").build();
+        domainService.findById(domain)
+                .switchIfEmpty(Maybe.error(new DomainNotFoundException(domain)))
+                .flatMapSingle(irrelevant -> userService.update(domain, user, updateUser))
+                .map(user1 -> Response.ok(user1).build())
+                .subscribe(
+                        result -> response.resume(result),
+                        error -> response.resume(error));
     }
 
     @DELETE
@@ -117,11 +121,15 @@ public class UserResource {
     @ApiResponses({
             @ApiResponse(code = 204, message = "User successfully deleted"),
             @ApiResponse(code = 500, message = "Internal server error")})
-    public Response delete(@PathParam("domain") String domain, @PathParam("user") String user) {
-        /*userService.delete(user);
+    public void delete(@PathParam("domain") String domain,
+                           @PathParam("user") String user,
+                           @Suspended final AsyncResponse response) {
 
-        return Response.noContent().build();*/
-
-        return Response.status(Response.Status.NOT_IMPLEMENTED).entity("Not implemented").build();
+        domainService.findById(domain)
+                .switchIfEmpty(Maybe.error(new DomainNotFoundException(domain)))
+                .flatMapCompletable(irrelevant -> userService.delete(user))
+                .subscribe(
+                        () -> response.resume(Response.noContent().build()),
+                        error -> response.resume(error));
     }
 }

@@ -52,6 +52,9 @@
         <jetty.version>9.3.14.v20161028</jetty.version>
         <jjwt.version>0.10.5</jjwt.version>
         <rxjava.version>2.1.12</rxjava.version>
+        <freemarker.version>2.3.28</freemarker.version>
+        <jsoup.version>1.10.1</jsoup.version>
+        <mail.version>1.4.7</mail.version>
     </properties>
 
     <modules>

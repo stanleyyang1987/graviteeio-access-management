@@ -44,7 +44,7 @@ public class UpdateUser {
 
     private String client;
 
-    private Long loginsCount;
+    private long loginsCount;
 
     private Date loggedAt;
 
@@ -134,11 +134,11 @@ public class UpdateUser {
         this.client = client;
     }
 
-    public Long getLoginsCount() {
+    public long getLoginsCount() {
         return loginsCount;
     }
 
-    public void setLoginsCount(Long loginsCount) {
+    public void setLoginsCount(long loginsCount) {
         this.loginsCount = loginsCount;
     }
 

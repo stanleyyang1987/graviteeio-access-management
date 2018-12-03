@@ -46,10 +46,8 @@ import java.util.Set;
 @Component
 public class UserServiceImpl implements UserService {
 
-    /**
-     * Logger.
-     */
     private final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
+    private final static String IDP_SOURCE_GRAVITEE = "gravitee-am";
 
     @Autowired
     private UserRepository userRepository;
@@ -117,10 +115,8 @@ public class UserServiceImpl implements UserService {
         user.setFirstName(newUser.getFirstName());
         user.setLastName(newUser.getLastName());
         user.setEmail(newUser.getEmail());
-        user.setSource(newUser.getSource());
-        user.setClient(newUser.getClient());
-        user.setLoggedAt(newUser.getLoggedAt());
-        user.setLoginsCount(newUser.getLoginsCount());
+        user.setSource(IDP_SOURCE_GRAVITEE);
+        user.setInternal(true);
         user.setAdditionalInformation(newUser.getAdditionalInformation());
         user.setCreatedAt(new Date());
         user.setUpdatedAt(user.getCreatedAt());

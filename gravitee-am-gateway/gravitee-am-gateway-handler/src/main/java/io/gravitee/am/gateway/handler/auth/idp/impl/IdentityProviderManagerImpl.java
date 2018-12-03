@@ -45,6 +45,7 @@ import java.util.concurrent.ConcurrentMap;
 public class IdentityProviderManagerImpl extends AbstractService implements IdentityProviderManager, InitializingBean, EventListener<IdentityProviderEvent, Payload> {
 
     private static final Logger logger = LoggerFactory.getLogger(IdentityProviderManagerImpl.class);
+    private static final String DEFAULT_IDP_ID = "gravitee-am";
 
     @Autowired
     private Domain domain;
@@ -57,6 +58,9 @@ public class IdentityProviderManagerImpl extends AbstractService implements Iden
 
     @Autowired
     private EventManager eventManager;
+
+    @Autowired
+    private AuthenticationProvider defaultAuthenticationProvider;
 
     private ConcurrentMap<String, AuthenticationProvider> providers = new ConcurrentHashMap<>();
     private ConcurrentMap<String, IdentityProvider> identities = new ConcurrentHashMap<>();
@@ -75,6 +79,9 @@ public class IdentityProviderManagerImpl extends AbstractService implements Iden
 
     @Override
     public void afterPropertiesSet() {
+        logger.info("Initializing default identity provider for domain {}", domain.getName());
+        initDefaultIdentityProvider();
+
         logger.info("Initializing identity providers for domain {}", domain.getName());
 
         // identity providers are required for extension grants bean creation
@@ -137,5 +144,9 @@ public class IdentityProviderManagerImpl extends AbstractService implements Iden
                         identityProvider.getMappers(), identityProvider.getRoleMapper());
         providers.put(identityProvider.getId(), authenticationProvider);
         identities.put(identityProvider.getId(), identityProvider);
+    }
+
+    private void initDefaultIdentityProvider() {
+        providers.put(DEFAULT_IDP_ID, defaultAuthenticationProvider);
     }
 }

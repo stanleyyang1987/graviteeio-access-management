@@ -37,7 +37,12 @@ export class UserService {
   }
 
   update(domainId, id, user): Observable<Response>  {
-    return this.http.put(this.usersURL + domainId + "/users/" + id, user);
+    return this.http.put(this.usersURL + domainId + "/users/" + id, {
+      'firstName' : user.firstName,
+      'lastName' : user.lastName,
+      'email' : user.email,
+      'additionalInformation' : user.additionalInformation
+    });
   }
 
   delete(domainId, id): Observable<Response>  {

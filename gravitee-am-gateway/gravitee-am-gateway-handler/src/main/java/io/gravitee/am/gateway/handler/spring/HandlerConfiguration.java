@@ -17,14 +17,24 @@ package io.gravitee.am.gateway.handler.spring;
 
 import io.gravitee.am.gateway.handler.auth.UserAuthenticationManager;
 import io.gravitee.am.gateway.handler.auth.idp.IdentityProviderManager;
+import io.gravitee.am.gateway.handler.auth.idp.impl.GraviteeAuthenticationProvider;
 import io.gravitee.am.gateway.handler.auth.idp.impl.IdentityProviderManagerImpl;
 import io.gravitee.am.gateway.handler.auth.impl.UserAuthenticationManagerImpl;
+import io.gravitee.am.gateway.handler.email.EmailService;
+import io.gravitee.am.gateway.handler.email.impl.EmailServiceImpl;
 import io.gravitee.am.gateway.handler.jwt.JwtService;
 import io.gravitee.am.gateway.handler.jwt.impl.JwtServiceImpl;
 import io.gravitee.am.gateway.handler.oauth2.spring.OAuth2Configuration;
 import io.gravitee.am.gateway.handler.oidc.spring.OpenIDConfiguration;
+import io.gravitee.am.gateway.handler.page.PageManager;
+import io.gravitee.am.gateway.handler.page.impl.PageManagerImpl;
+import io.gravitee.am.gateway.handler.scim.spring.SCIMConfiguration;
+import io.gravitee.am.gateway.handler.users.spring.UsersConfiguration;
 import io.gravitee.am.gateway.handler.vertx.spring.SecurityDomainRouterConfiguration;
 import io.gravitee.am.gateway.service.spring.ServiceConfiguration;
+import io.gravitee.am.identityprovider.api.AuthenticationProvider;
+import io.gravitee.am.service.authentication.crypto.password.PasswordEncoder;
+import io.gravitee.am.service.authentication.crypto.password.bcrypt.BCryptPasswordEncoder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -38,6 +48,8 @@ import org.springframework.context.annotation.Import;
         ServiceConfiguration.class,
         OAuth2Configuration.class,
         OpenIDConfiguration.class,
+        SCIMConfiguration.class,
+        UsersConfiguration.class,
         SecurityDomainRouterConfiguration.class
 })
 public class HandlerConfiguration {
@@ -55,5 +67,25 @@ public class HandlerConfiguration {
     @Bean
     public JwtService jwtService() {
         return new JwtServiceImpl();
+    }
+
+    @Bean
+    public AuthenticationProvider authenticationProvider() {
+        return new GraviteeAuthenticationProvider();
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public EmailService emailService() {
+        return new EmailServiceImpl();
+    }
+
+    @Bean
+    public PageManager pageManager() {
+        return new PageManagerImpl();
     }
 }

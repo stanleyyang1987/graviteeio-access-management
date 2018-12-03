@@ -51,6 +51,8 @@ public class UpdateClient {
 
     private boolean enhanceScopesWithUserPermissions;
 
+    private boolean useDefaultIdentityProvider;
+
     public List<String> getRedirectUris() {
         return redirectUris;
     }
@@ -153,5 +155,13 @@ public class UpdateClient {
 
     public void setEnhanceScopesWithUserPermissions(boolean enhanceScopesWithUserPermissions) {
         this.enhanceScopesWithUserPermissions = enhanceScopesWithUserPermissions;
+    }
+
+    public boolean isUseDefaultIdentityProvider() {
+        return useDefaultIdentityProvider;
+    }
+
+    public void setUseDefaultIdentityProvider(boolean useDefaultIdentityProvider) {
+        this.useDefaultIdentityProvider = useDefaultIdentityProvider;
     }
 }

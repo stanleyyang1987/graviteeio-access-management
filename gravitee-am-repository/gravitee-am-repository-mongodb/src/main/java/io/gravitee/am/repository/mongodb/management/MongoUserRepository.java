@@ -31,7 +31,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import static com.mongodb.client.model.Filters.and;
@@ -47,6 +49,8 @@ public class MongoUserRepository extends AbstractManagementMongoRepository imple
     private static final String FIELD_ID = "_id";
     private static final String FIELD_DOMAIN = "domain";
     private static final String FIELD_USERNAME = "username";
+    private static final String FIELD_SOURCE = "source";
+    private static final String FIELD_EMAIL = "email";
 
     private MongoCollection<UserMongo> usersCollection;
 
@@ -57,7 +61,9 @@ public class MongoUserRepository extends AbstractManagementMongoRepository imple
     public void init() {
         usersCollection = mongoOperations.getCollection("users", UserMongo.class);
         usersCollection.createIndex(new Document(FIELD_DOMAIN, 1)).subscribe(new LoggableIndexSubscriber());
+        usersCollection.createIndex(new Document(FIELD_DOMAIN, 1).append(FIELD_EMAIL, 1)).subscribe(new LoggableIndexSubscriber());
         usersCollection.createIndex(new Document(FIELD_DOMAIN, 1).append(FIELD_USERNAME, 1)).subscribe(new LoggableIndexSubscriber());
+        usersCollection.createIndex(new Document(FIELD_DOMAIN, 1).append(FIELD_USERNAME, 1).append(FIELD_SOURCE, 1)).subscribe(new LoggableIndexSubscriber());
     }
 
     @Override
@@ -72,11 +78,28 @@ public class MongoUserRepository extends AbstractManagementMongoRepository imple
         return Single.zip(countOperation, usersOperation, (count, users) -> new Page<>(users, page, count));
     }
 
+
+    @Override
+    public Single<List<User>> findByDomainAndEmail(String domain, String email) {
+        return Observable.fromPublisher(usersCollection.find(and(eq(FIELD_DOMAIN, domain), eq(FIELD_EMAIL, email)))).map(this::convert).collect(ArrayList::new, List::add);
+    }
+
     @Override
     public Maybe<User> findByUsernameAndDomain(String domain, String username) {
         return Observable.fromPublisher(
                 usersCollection
                         .find(and(eq(FIELD_DOMAIN, domain), eq(FIELD_USERNAME, username)))
+                        .limit(1)
+                        .first())
+                .firstElement()
+                .map(this::convert);
+    }
+
+    @Override
+    public Maybe<User> findByDomainAndUsernameAndSource(String domain, String username, String source) {
+        return Observable.fromPublisher(
+                usersCollection
+                        .find(and(eq(FIELD_DOMAIN, domain), eq(FIELD_USERNAME, username), eq(FIELD_SOURCE, source)))
                         .limit(1)
                         .first())
                 .firstElement()
@@ -122,6 +145,7 @@ public class MongoUserRepository extends AbstractManagementMongoRepository imple
         user.setAccountNonLocked(userMongo.isAccountNonLocked());
         user.setCredentialsNonExpired(userMongo.isCredentialsNonExpired());
         user.setEnabled(userMongo.isEnabled());
+        user.setInternal(userMongo.isInternal());
         user.setDomain(userMongo.getDomain());
         user.setSource(userMongo.getSource());
         user.setClient(userMongo.getClient());
@@ -150,6 +174,7 @@ public class MongoUserRepository extends AbstractManagementMongoRepository imple
         userMongo.setAccountNonLocked(user.isAccountNonLocked());
         userMongo.setCredentialsNonExpired(user.isCredentialsNonExpired());
         userMongo.setEnabled(user.isEnabled());
+        userMongo.setInternal(user.isInternal());
         userMongo.setDomain(user.getDomain());
         userMongo.setSource(user.getSource());
         userMongo.setClient(user.getClient());

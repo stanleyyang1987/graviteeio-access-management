@@ -42,6 +42,8 @@ public class NewUser {
 
     private boolean enabled = true;
 
+    private boolean internal;
+
     private String domain;
 
     private String source;
@@ -128,6 +130,14 @@ public class NewUser {
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+
+    public boolean isInternal() {
+        return internal;
+    }
+
+    public void setInternal(boolean internal) {
+        this.internal = internal;
     }
 
     public String getDomain() {

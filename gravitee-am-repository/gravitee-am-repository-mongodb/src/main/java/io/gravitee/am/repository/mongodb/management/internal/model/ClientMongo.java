@@ -73,7 +73,7 @@ public class ClientMongo extends Auditable {
 
     private boolean enhanceScopesWithUserPermissions;
 
-    private boolean generateNewTokenPerRequest;
+    private boolean useDefaultIdentityProvider;
 
     public String getId() {
         return id;
@@ -211,12 +211,12 @@ public class ClientMongo extends Auditable {
         this.enhanceScopesWithUserPermissions = enhanceScopesWithUserPermissions;
     }
 
-    public boolean isGenerateNewTokenPerRequest() {
-        return generateNewTokenPerRequest;
+    public boolean isUseDefaultIdentityProvider() {
+        return useDefaultIdentityProvider;
     }
 
-    public void setGenerateNewTokenPerRequest(boolean generateNewTokenPerRequest) {
-        this.generateNewTokenPerRequest = generateNewTokenPerRequest;
+    public void setUseDefaultIdentityProvider(boolean useDefaultIdentityProvider) {
+        this.useDefaultIdentityProvider = useDefaultIdentityProvider;
     }
 
     @Override
